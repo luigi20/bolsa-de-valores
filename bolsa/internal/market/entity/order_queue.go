@@ -9,7 +9,7 @@ func NewOrderQueue() *OrderQueue {
 }
 
 func (oq *OrderQueue) Less(i, j int) bool {
-	return oq.orders[i].price < oq.orders[j].price
+	return oq.orders[i].GetPrice() < oq.orders[j].GetPrice()
 }
 
 func (oq *OrderQueue) Swap(i, j int) {
