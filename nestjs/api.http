@@ -1,0 +1,65 @@
+GET http://localhost:3000
+
+
+###
+POST http://localhost:3000/assets
+Content-Type: application/json
+
+{
+  "id":"asset1",
+  "symbol": "A1",
+  "price":100
+}
+
+###
+GET http://localhost:3000/assets
+Content-Type: application/json
+
+####
+GET http://localhost:3000/wallets
+
+
+###
+POST http://localhost:3000/wallets
+Content-Type: application/json
+
+{
+  "id":"wallet2"
+}
+
+###
+GET http://localhost:3000/wallet_assets/wallet1/assets
+
+
+###
+POST http://localhost:3000/wallet_assets/wallet1/assets
+Content-Type: application/json
+
+{
+  "asset_id":"asset1",
+  "shares":10
+}
+
+###
+POST http://localhost:3000/orders
+Content-Type: application/json
+
+{
+  "wallet_id":"wallet1",
+  "asset_id":"asset1",
+  "shares":5,
+  "price":100,
+  "type": "BUY"
+}
+
+###
+POST http://localhost:3000/orders
+Content-Type: application/json
+
+{
+  "wallet_id": "wallet1",
+  "asset_id":"asset2",
+  "shares":5,
+  "price": 100,
+  "type":"BUY"
+}
