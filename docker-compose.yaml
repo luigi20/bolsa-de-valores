@@ -1,0 +1,62 @@
+services:
+  db:
+    image: mongo:9.0
+    container_name: db
+    ports:
+      - '27017:27017'
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mongosh',
+          '--quiet',
+          '--eval',
+          'quit(db.hello().isWritablePrimary ? 0 : 1)',
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 20s
+
+  migrate_wallet:
+    build: .
+    container_name: nest-migrate-wallet
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "yarn prisma db push && yarn prisma generate"
+    networks:
+      - app-network
+
+  api:
+    build: .
+    container_name: nestjs
+    env_file:
+      - .env
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate_wallet:
+        condition: service_completed_successfully
+    volumes:
+      - .:/app
+    command: sh -c "yarn prisma generate && yarn start:dev"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
